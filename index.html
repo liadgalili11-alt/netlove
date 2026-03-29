@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetLove | המתנה שהופכת רגע לסרט</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --netflix-red: #B20710;
+            --black: #000000;
+            --dark-grey: #141414;
+            --light-grey: #2f2f2f;
+            --white: #ffffff;
+            --whatsapp-green: #25d366;
+        }
+
+        body { font-family: 'Assistant', sans-serif; background-color: var(--black); color: var(--white); margin: 0; padding: 0; scroll-behavior: smooth; }
+        
+        /* Promo Bar */
+        .promo-bar {
+            background-color: var(--netflix-red);
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-weight: 800;
+            font-size: 1rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #timer { background: rgba(0,0,0,0.3); padding: 2px 10px; border-radius: 4px; font-family: monospace; }
+
+        header { padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); position: fixed; top: 40px; width: 100%; z-index: 1000; box-sizing: border-box; }
+        .logo { color: var(--netflix-red); font-size: 2.2rem; font-weight: 800; text-decoration: none; }
+        
+        .social-icons a { color: white; font-size: 1.5rem; margin-right: 15px; transition: 0.3s; }
+        .social-icons a:hover { color: var(--netflix-red); }
+
+        .hero { 
+            height: 90vh; 
+            background: linear-gradient(to top, var(--black) 10%, transparent 50%), url('hero.jpg'); 
+            background-size: cover; background-position: center; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 20px; 
+            margin-top: 40px;
+        }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 10px; text-shadow: 2px 2px 20px #000; }
+        .price-tag { background: var(--netflix-red); color: white; padding: 5px 20px; border-radius: 50px; font-weight: 800; font-size: 1.4rem; margin-bottom: 20px; box-shadow: 0 0 20px rgba(178, 7, 16, 0.5); border: 2px solid white; }
+        
+        .btn-main { background-color: var(--netflix-red); color: white; padding: 18px 50px; font-size: 1.4rem; font-weight: bold; text-decoration: none; border-radius: 4px; transition: 0.3s; box-shadow: 0 4px 15px rgba(178, 7, 16, 0.4); display: inline-block; }
+        .btn-main:hover { transform: scale(1.05); background-color: #e50914; }
+
+        section { padding: 80px 50px; }
+        .section-title { font-size: 2.2rem; border-right: 5px solid var(--netflix-red); padding-right: 15px; margin-bottom: 40px; font-weight: 800; }
+
+        .trust-badges { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; padding: 25px; background: #0a0a0a; border-top: 1px solid #222; }
+        .badge { text-align: center; font-size: 0.95rem; color: #aaa; max-width: 150px; }
+        .badge i { display: block; font-size: 1.6rem; color: var(--netflix-red); margin-bottom: 8px; }
+
+        .video-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(178, 7, 16, 0.2);
+            border: 1px solid #333;
+            background: #111;
+        }
+        video { width: 100%; display: block; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card { background-color: var(--dark-grey); border-radius: 8px; overflow: hidden; transition: 0.4s; border: 1px solid #222; }
+        .card:hover { transform: translateY(-10px); border-color: var(--netflix-red); }
+        .card-img { height: 400px; background-size: cover; background-position: center; background-color: #222; }
+        .card-content { padding: 20px; text-align: center; }
+
+        .faq-container { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: #1a1a1a; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #333; }
+        .faq-question { padding: 20px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease; background: #111; color: #ccc; }
+        .faq-item.active .faq-answer { max-height: 250px; padding: 20px; }
+
+        .testimonial-card { background: var(--dark-grey); padding: 30px; border-radius: 10px; border-bottom: 3px solid var(--netflix-red); }
+        .whatsapp-float { position: fixed; bottom: 30px; left: 30px; background: var(--whatsapp-green); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; text-decoration: none; z-index: 2000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+        footer { text-align: center; padding: 60px; border-top: 1px solid #333; background: #000; }
+        .footer-socials { margin-top: 20px; font-size: 1.8rem; }
+        .footer-socials a { color: #555; margin: 0 10px; transition: 0.3s; }
+        .footer-socials a:hover { color: var(--netflix-red); }
+
+        @media (max-width: 768px) { 
+            .hero h1 { font-size: 2.5rem; } 
+            section { padding: 40px 20px; } 
+            header { padding: 10px 20px; top: 70px; }
+            .hero { margin-top: 70px; }
+            .promo-bar { font-size: 0.85rem; flex-direction: column; gap: 5px; height: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="promo-bar">
+        <span>🔥 מבצע לזמן מוגבל: משלוח חינם עד הבית!</span>
+        <div id="timer">00:00:00</div>
+    </div>
+
+    <a href="https://wa.me/message/XKSUIPTBZEF7O1" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <header>
+        <a href="#" class="logo">NETLOVE</a>
+        <div class="social-icons">
+            <a href="https://www.instagram.com/netlove.tv?igsh=MTMyeHY4aThlczFtZg%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@netlove.tv?_r=1&_t=ZS-940M4aKsH71" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="price-tag">עכשיו ב-220 ₪ כולל משלוח!</div>
+        <h1>הסיפור שלכם הוא הסרט הכי טוב בעיר</h1>
+        <p>מעצבים לכם מסגרת אישית יוקרתית בסגנון נטפליקס – המתנה שמרגשת כל פעם מחדש.</p>
+        <div>
+            <!-- טקסט כפתור חדש למניעת פער ציפיות -->
+            <a href="https://meshulam.co.il/quick_payment?b=4ea88c52696777a49613b8bb5c6e489c" class="btn-main">להזמנה מאובטחת וקבלת סקיצה</a>
+            <p style="margin-top:15px; color:#aaa; font-size:0.9rem;"><i class="fas fa-magic" style="color: var(--netflix-red);"></i> הזמינו עכשיו ונעצב עבורכם סקיצה לאישור תוך 24 שעות</p>
+        </div>
+    </section>
+
+    <div class="trust-badges">
+        <div class="badge"><i class="fas fa-star"></i> 100% שביעות רצון</div>
+        <div class="badge"><i class="fas fa-truck-loading"></i> משלוח חינם עד הבית</div>
+        <div class="badge"><i class="fab fa-whatsapp"></i> ליווי אישי צמוד</div>
+        <div class="badge"><i class="fas fa-magic"></i> סקיצה לאישורכם</div>
+        <div class="badge"><i class="fas fa-lock"></i> רכישה מאובטחת SSL</div>
+    </div>
+
+    <section style="background: #050505;">
+        <h2 class="section-title">תראו איך זה נראה במציאות</h2>
+        <div class="video-container">
+            <video autoplay muted loop playsinline>
+                <source src="product-video.mp4" type="video/mp4">
+            </video>
+        </div>
+        <p style="text-align: center; margin-top: 20px; color: #888;">איכות הדפסה פרימיום וגימור יוקרתי</p>
+    </section>
+
+    <section id="products">
+        <h2 class="section-title">הקולקציה שלנו</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-img" style="background-image: url('couples.jpg')"></div>
+                <div class="card-content"><h3>מסגרת זוגית</h3></div>
+            </div>
+            <div class="card">
+                <div class="card-img" style="background-image: url('army.jpg')"></div>
+                <div class="card-content"><h3>מתנה למפקד/ת</h3></div>
+            </div>
+            <div class="card">
+                <div class="card-img" style="background-image: url('friends.jpg')"></div>
+                <div class="card-content"><h3>לחבר/ה הכי טוב/ה</h3></div>
+            </div>
+        </div>
+    </section>
+
+    <div style="text-align: center; padding: 60px 20px;">
+        <h2 style="font-size: 2.2rem; margin-bottom: 20px;">מוכנים להפוך את הרגע שלכם לסרט?</h2>
+        <p style="color: #888; margin-bottom: 30px;">הצטרפו למאות לקוחות מרוצים שכבר התרגשו מהמסגרת שלהם.</p>
+        <!-- כפתור תחתון חדש -->
+        <a href="https://meshulam.co.il/quick_payment?b=4ea88c52696777a49613b8bb5c6e489c" class="btn-main">אני רוצה להזמין מסגרת כזו</a>
+    </div>
+
+    <section id="faq">
+        <h2 class="section-title">שאלות ותשובות</h2>
+        <div class="faq-container">
+            <div class="faq-item">
+                <div class="faq-question">איך עובד תהליך ההזמנה?</div>
+                <div class="faq-answer">זה פשוט מאוד! מבצעים הזמנה מאובטחת כאן באתר, ומיד לאחר מכן אנחנו יוצרים איתכם קשר ב-WhatsApp כדי לקבל את התמונה והמלל. תוך 24 שעות נשלח לכם סקיצה לאישור לפני ההדפסה.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">אפשר לקבל עיצוב מותאם אישית?</div>
+                <div class="faq-answer">בוודאי! ✨ כל שינוי שתרצו — פשוט רשמו אותו בהערות ההזמנה. אם זה אפשרי לביצוע, נשנה וניצור לכם עיצוב מותאם אישית בדיוק כמו שחלמתם.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">מי כותב את התקציר?</div>
+                <div class="faq-answer">לבחירתך! אתם יכולים לכתוב לנו נקודות ואנחנו נסגנן עבורכם את התקציר ונשלח לכם לאישור עד 24 שעות מרגע ביצוע ההזמנה!</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">מה כלול באריזת המתנה?</div>
+                <div class="faq-answer">המתנה מגיעה מוכנה ומעוצבת: מסגרת פרימיום A4, ארוזה בצורה מיטבית להגנה על הזכוכית, והפתעה קטנה מאיתנו.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">תוך כמה זמן זה מגיע?</div>
+                <div class="faq-answer">משלוח חינם עד לבית הלקוח בין 6-9 ימי עסקים. אנחנו עושים מאמץ להוציא את המשלוחים מהר ככל האפשר!</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="logo">NETLOVE</div>
+        <div class="footer-socials">
+            <a href="https://www.instagram.com/netlove.tv?igsh=MTMyeHY4aThlczFtZg%3D%3D&utm_source=qr" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@netlove.tv?_r=1&_t=ZS-940M4aKsH71" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p style="margin-top: 40px; color: #333; font-size: 0.8rem;">&copy; 2026 NetLove Israel. כל הזכויות שמורות.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        function updateTimer() {
+            const now = new Date();
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59);
+            let diff = endOfDay - now;
+            if (diff <= 0) { endOfDay.setDate(endOfDay.getDate() + 1); diff = endOfDay - now; }
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+            document.getElementById('timer').innerText = 
+                (hours < 10 ? "0" + hours : hours) + ":" + 
+                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                (seconds < 10 ? "0" + seconds : seconds);
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
