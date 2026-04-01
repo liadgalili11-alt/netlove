@@ -54,32 +54,26 @@ def render():
     )
 
     hashtags_raw = st.text_area(
-        "# האשטאגים (שורה לכל האשטאג, ללא #)",
-        value="\n".join(content.get("hashtags", [])),
-        height=120,
+        "# האשטגים (עד 5, שורה לכל האשטג, ללא #)",
+        value="\n".join(h.lstrip("#") for h in content.get("hashtags", [])),
+        height=100,
         key="edit_hashtags",
-    )
-
-    song = st.text_input(
-        "🎵 המלצת שיר",
-        value=content.get("song_recommendation", ""),
-        key="edit_song",
     )
 
     # Sync edits back to session state so publisher gets updated values
     st.session_state["generated_content"] = {
         "hook": hook,
         "caption": caption,
-        "hashtags": [h.strip().lstrip("#") for h in hashtags_raw.splitlines() if h.strip()],
-        "song_recommendation": song,
+        "hashtags": [h.strip().lstrip("#") for h in hashtags_raw.splitlines() if h.strip()][:5],
     }
 
     # Preview formatted post
     with st.expander("👁️ תצוגה מקדימה של הפוסט"):
-        hashtags_preview = " ".join(f"#{h}" for h in st.session_state["generated_content"]["hashtags"])
+        tags = st.session_state["generated_content"]["hashtags"]
+        hashtags_preview = " ".join(f"#{h}" for h in tags)
         st.markdown(f"**{hook}**")
+        st.markdown("")
         st.markdown(caption)
         if hashtags_preview:
-            st.markdown(f"`{hashtags_preview}`")
-        if song:
-            st.markdown(f"🎵 *{song}*")
+            st.markdown("")
+            st.markdown(hashtags_preview)
