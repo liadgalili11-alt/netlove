@@ -68,6 +68,43 @@
         .btn-main { background-color: var(--netflix-red); color: white; padding: 18px 50px; font-size: 1.4rem; font-weight: bold; text-decoration: none; border-radius: 4px; transition: 0.3s; box-shadow: 0 4px 15px rgba(178, 7, 16, 0.4); display: inline-block; }
         .btn-main:hover { transform: scale(1.05); background-color: #e50914; }
 
+        /* כפתור תצוגה מקדימה */
+        .btn-preview {
+            background: transparent; color: #fff; padding: 14px 36px;
+            font-size: 1.1rem; font-weight: bold; border: 2px solid #fff;
+            border-radius: 4px; cursor: pointer; transition: 0.3s;
+            margin-top: 14px; display: inline-block;
+        }
+        .btn-preview:hover { background: rgba(255,255,255,0.15); }
+
+        /* מודל */
+        .preview-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.85);
+            align-items: center; justify-content: center;
+        }
+        .preview-modal-overlay.open { display: flex; }
+        .preview-modal {
+            position: relative; width: 95vw; max-width: 1100px;
+            height: 90vh; background: #141414;
+            border-radius: 8px; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .preview-modal iframe {
+            width: 100%; height: 100%; border: none;
+        }
+        .preview-modal-close {
+            position: absolute; top: 12px; left: 16px; z-index: 10;
+            background: rgba(0,0,0,0.6); color: #fff; border: none;
+            font-size: 1.6rem; width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .preview-modal-close:hover { background: #E50914; }
+        @media (max-width: 600px) {
+            .preview-modal { width: 100vw; height: 100vh; border-radius: 0; }
+        }
+
         section { padding: 80px 50px; }
         .section-title { font-size: 2.2rem; border-right: 5px solid var(--netflix-red); padding-right: 15px; margin-bottom: 40px; font-weight: 800; }
 
@@ -141,6 +178,8 @@
         <div>
             <!-- טקסט כפתור חדש למניעת פער ציפיות -->
             <a href="https://meshulam.co.il/quick_payment?b=4ea88c52696777a49613b8bb5c6e489c" class="btn-main">להזמנה מאובטחת וקבלת סקיצה</a>
+            <br>
+            <button class="btn-preview" onclick="document.querySelector('.preview-modal-overlay').classList.add('open')">🎬 נסו את התצוגה המקדימה</button>
             <p style="margin-top:15px; color:#aaa; font-size:0.9rem;"><i class="fas fa-magic" style="color: var(--netflix-red);"></i> הזמינו עכשיו ונעצב עבורכם סקיצה לאישור תוך 24 שעות</p>
         </div>
     </section>
@@ -179,6 +218,208 @@
                 <div class="card-content"><h3>לחבר/ה הכי טוב/ה</h3></div>
             </div>
         </div>
+    </section>
+
+    <!-- ══ Try-the-frame section ══ -->
+    <section id="try-frame" style="background:#050505; padding: 80px 20px;">
+        <h2 class="section-title">נסו את המסגרת שלכם</h2>
+        <p style="color:#888; margin-bottom:40px; font-size:1rem;">העלו תמונה וראו בדיוק איך המסגרת תיראה — לפני שמזמינים</p>
+
+        <style>
+            .try-layout { display:flex; gap:48px; align-items:flex-start; justify-content:center; flex-wrap:wrap; max-width:980px; margin:0 auto; }
+
+            /* Frame */
+            .try-frame-outer { flex-shrink:0; width:300px; height:425px; border:9px solid #111; border-radius:3px; box-shadow:0 0 0 2px #222,0 20px 50px rgba(0,0,0,0.9),0 0 30px rgba(229,9,20,0.08); overflow:hidden; background:#000; }
+            .try-poster { width:100%; height:100%; display:flex; flex-direction:column; background:#000; }
+            .try-photo { position:relative; flex-shrink:0; height:224px; background:#111; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+            .try-photo img { width:100%; height:100%; object-fit:cover; display:none; }
+            .try-photo::after { content:''; position:absolute; bottom:0; left:0; right:0; height:110px; background:linear-gradient(to bottom,transparent,#000); pointer-events:none; }
+            .try-ph { text-align:center; color:#333; }
+            .try-ph span { display:block; font-size:2rem; margin-bottom:6px; }
+            .try-ph p { font-size:0.7rem; }
+            .try-ptitle { position:absolute; bottom:0; right:0; left:0; z-index:2; padding:0 10px 5px; font-size:1.35rem; font-weight:800; line-height:1.1; text-shadow:0 2px 8px rgba(0,0,0,0.9); }
+            .try-info { flex:1; background:#000; padding:7px 10px; display:flex; flex-direction:column; gap:5px; overflow:hidden; }
+            .try-ctrl { display:flex; gap:5px; }
+            .try-play { background:#fff; color:#000; border:none; border-radius:3px; padding:3px 9px; font-size:0.65rem; font-weight:700; font-family:'Assistant',sans-serif; display:flex; align-items:center; gap:3px; }
+            .try-fav  { background:rgba(109,109,110,0.7); color:#fff; border:none; border-radius:3px; padding:3px 9px; font-size:0.65rem; font-family:'Assistant',sans-serif; }
+            .try-badges { display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+            .try-match { color:#46d369; font-size:0.6rem; font-weight:700; }
+            .try-yr    { color:#fff; font-size:0.6rem; }
+            .try-bbox  { border:1px solid #aaa; color:#aaa; padding:0 3px; font-size:0.52rem; font-weight:700; border-radius:2px; }
+            .try-top10 { background:#E50914; color:#fff; font-size:0.42rem; font-weight:800; padding:1px 3px; border-radius:2px; display:flex; flex-direction:column; align-items:center; line-height:1.1; }
+            .try-top10 .tt { font-size:0.38rem; } .try-top10 .tn { font-size:0.55rem; }
+            .try-top1  { font-size:0.58rem; font-weight:700; }
+            .try-cast  { font-size:0.57rem; color:#ccc; line-height:1.5; }
+            .try-cast .cl { color:#777; }
+            .try-desc  { font-size:0.54rem; color:#bbb; line-height:1.55; flex:1; overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+            .try-logo  { display:flex; align-items:center; gap:6px; margin-top:auto; padding-top:3px; }
+            .try-logo img { width:18px; height:18px; border-radius:50%; }
+            .try-ltext  { color:#E50914; font-size:0.65rem; font-weight:800; letter-spacing:1px; }
+            /* PREVIEW ONLY overlay */
+            .try-frame-outer { position:relative; }
+            .preview-watermark {
+                position:absolute; inset:0; z-index:10;
+                display:flex; align-items:center; justify-content:center;
+                pointer-events:none;
+            }
+            .preview-watermark span {
+                transform:rotate(-35deg);
+                font-size:1.1rem; font-weight:800; letter-spacing:3px;
+                color:rgba(255,255,255,0.22);
+                text-shadow:0 0 8px rgba(0,0,0,0.5);
+                white-space:nowrap; user-select:none;
+            }
+
+            /* Panel */
+            .try-panel { flex:1; min-width:260px; max-width:360px; display:flex; flex-direction:column; gap:14px; }
+            .try-upload { border:2px dashed #444; border-radius:10px; padding:22px 16px; text-align:center; cursor:pointer; transition:0.25s; background:#1a1a1a; }
+            .try-upload:hover,.try-upload.drag-over { border-color:#E50914; background:#1f1111; }
+            .try-upload input { display:none; }
+            .try-upload .u-ico { font-size:1.8rem; margin-bottom:7px; }
+            .try-upload h3 { font-size:0.95rem; margin-bottom:3px; }
+            .try-upload p  { color:#666; font-size:0.78rem; }
+            .try-card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; padding:14px; }
+            .try-card-ttl { font-size:0.7rem; color:#555; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+            .try-ig { margin-bottom:9px; }
+            .try-ig label { display:block; font-size:0.75rem; color:#888; margin-bottom:3px; }
+            .try-ig input,.try-ig textarea { width:100%; background:#111; border:1px solid #333; color:#fff; padding:8px 10px; border-radius:6px; font-family:'Assistant',sans-serif; font-size:0.86rem; }
+            .try-ig textarea { resize:vertical; min-height:64px; line-height:1.5; }
+            .try-ig input:focus,.try-ig textarea:focus { outline:none; border-color:#E50914; }
+            .try-row2 { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+            .try-ab { width:100%; padding:12px; border:none; border-radius:6px; font-size:0.95rem; font-weight:700; cursor:pointer; font-family:'Assistant',sans-serif; transition:0.25s; }
+            .try-ab.grey { background:#222; color:#fff; border:1px solid #444; }
+            .try-ab.grey:hover { background:#2a2a2a; }
+            .try-ab.red  { background:#E50914; color:#fff; }
+            .try-ab.red:hover  { background:#c20812; transform:scale(1.015); }
+            .try-ab:disabled { opacity:.35; cursor:not-allowed; transform:none !important; }
+            .try-note { text-align:center; color:#555; font-size:0.75rem; }
+
+            @media(max-width:720px){
+                .try-layout { flex-direction:column; align-items:center; gap:20px; }
+                .try-panel { order:1; width:100%; max-width:100%; }
+                .try-frame-outer { order:2; width:240px; height:340px; }
+                .try-photo { height:180px; }
+                .try-ptitle { font-size:1.05rem; }
+            }
+        </style>
+
+        <div class="try-layout">
+
+            <div class="try-frame-outer">
+                <div class="preview-watermark"><span>PREVIEW ONLY</span></div>
+                <div class="try-poster">
+                    <div class="try-photo" id="try-photo-wrap">
+                        <div class="try-ph" id="try-placeholder"><span>📷</span><p>העלו תמונה לתצוגה מקדימה</p></div>
+                        <img id="try-preview-img" alt="">
+                        <div class="try-ptitle" id="try-title-display">מטומטמים מאהבה</div>
+                    </div>
+                    <div class="try-info">
+                        <div class="try-ctrl">
+                            <button class="try-play">▶ נגן</button>
+                            <button class="try-fav">מועדפים</button>
+                        </div>
+                        <div class="try-badges">
+                            <span class="try-match">התאמה של 100%</span>
+                            <span class="try-yr" id="try-year-display">2024</span>
+                            <span class="try-bbox">HD</span>
+                            <span class="try-bbox">18+</span>
+                            <span class="try-top10"><span class="tt">TOP</span><span class="tn">10</span></span>
+                        </div>
+                        <div class="try-top1">מספר 1 בסרטים היום</div>
+                        <div class="try-cast">
+                            <span class="cl">ליהוק: </span><span id="try-cast-display">שמות השחקנים</span>
+                            <span style="color:#444"> | </span>
+                            <span class="cl">ז'אנר: </span><span id="try-genre-display">קומדיה רומנטית</span>
+                        </div>
+                        <div class="try-desc" id="try-desc-display">כאן יופיע תיאור הסרט האישי שלכם. ספרו את הסיפור שלכם, איך הכרתם, מה מיוחד בקשר שלכם...</div>
+                        <div class="try-logo">
+                            <img src="logo.png" alt="NetLove">
+                            <span class="try-ltext">NETLOVE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="try-panel">
+                <div class="try-upload" id="try-upload-area">
+                    <input type="file" id="try-photo-input" accept="image/*">
+                    <div class="u-ico">🖼️</div>
+                    <h3>העלו את התמונה שלכם</h3>
+                    <p>לחצו כאן או גררו תמונה</p>
+                </div>
+                <div class="try-card">
+                    <div class="try-card-ttl">התאימו אישית</div>
+                    <div class="try-ig"><label>כותרת (שם הסרט)</label><input id="try-input-title" type="text" maxlength="40" value="מטומטמים מאהבה"></div>
+                    <div class="try-row2">
+                        <div class="try-ig"><label>שנה</label><input id="try-input-year" type="text" maxlength="4" value="2024"></div>
+                        <div class="try-ig"><label>ז'אנר</label><input id="try-input-genre" type="text" value="קומדיה רומנטית"></div>
+                    </div>
+                    <div class="try-ig"><label>ליהוק (שמות)</label><input id="try-input-cast" type="text" value="שמות השחקנים"></div>
+                    <div class="try-ig"><label>תיאור הסרט</label><textarea id="try-input-desc">כאן יופיע תיאור הסרט האישי שלכם. ספרו את הסיפור שלכם, איך הכרתם, מה מיוחד בקשר שלכם...</textarea></div>
+                </div>
+                <a href="https://meshulam.co.il/quick_payment?b=4ea88c52696777a49613b8bb5c6e489c" target="_blank" style="text-decoration:none">
+                    <button class="try-ab red">🎬 אני רוצה להזמין את המסגרת הזו!</button>
+                </a>
+                <p class="try-note">220 ₪ כולל משלוח חינם • עיצוב אישי תוך 24 שעות</p>
+            </div>
+        </div>
+
+        <canvas id="try-canvas" style="display:none"></canvas>
+        <script>
+        (function(){
+            const ua=document.getElementById('try-upload-area'),pi=document.getElementById('try-photo-input'),
+                  img=document.getElementById('try-preview-img'),ph=document.getElementById('try-placeholder'),
+                  dlb=document.getElementById('try-dl-btn');
+            ua.addEventListener('click',()=>pi.click());
+            ua.addEventListener('dragover',e=>{e.preventDefault();ua.classList.add('drag-over');});
+            ua.addEventListener('dragleave',()=>ua.classList.remove('drag-over'));
+            ua.addEventListener('drop',e=>{e.preventDefault();ua.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))load(f);});
+            pi.addEventListener('change',e=>{if(e.target.files[0])load(e.target.files[0]);});
+            function load(f){const r=new FileReader();r.onload=e=>{img.src=e.target.result;img.style.display='block';ph.style.display='none';dlb.disabled=false;ua.querySelector('h3').textContent='✅ תמונה הועלתה!';};r.readAsDataURL(f);}
+            [['try-input-title','try-title-display','מטומטמים מאהבה'],
+             ['try-input-year','try-year-display','2024'],
+             ['try-input-cast','try-cast-display','שמות השחקנים'],
+             ['try-input-genre','try-genre-display','קומדיה רומנטית'],
+             ['try-input-desc','try-desc-display','כאן יופיע תיאור הסרט...']
+            ].forEach(([i,d,fb])=>document.getElementById(i).addEventListener('input',e=>document.getElementById(d).textContent=e.target.value||fb));
+        })();
+
+        function tryDownload(){
+            const canvas=document.getElementById('try-canvas'),ctx=canvas.getContext('2d'),W=640,H=906,PH=482;
+            canvas.width=W;canvas.height=H;
+            ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+            const img=document.getElementById('try-preview-img');
+            if(img.complete&&img.naturalWidth>0){
+                const iR=img.naturalWidth/img.naturalHeight,aR=W/PH;
+                let sx,sy,sw,sh;
+                if(iR>aR){sh=img.naturalHeight;sw=sh*aR;sx=(img.naturalWidth-sw)/2;sy=0;}
+                else{sw=img.naturalWidth;sh=sw/aR;sx=0;sy=(img.naturalHeight-sh)/2;}
+                ctx.drawImage(img,sx,sy,sw,sh,0,0,W,PH);
+            }
+            const g=ctx.createLinearGradient(0,PH-240,0,PH);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'#000');
+            ctx.fillStyle=g;ctx.fillRect(0,PH-240,W,240);
+            ctx.fillStyle='#fff';ctx.font='bold 58px Arial';ctx.textAlign='right';ctx.direction='rtl';
+            ctx.fillText(document.getElementById('try-input-title').value||'מטומטמים מאהבה',W-20,PH-12);
+            let y=PH+16;
+            ctx.fillStyle='#fff';ctx.font='bold 22px Arial';ctx.fillText('▶  נגן',W-20,y);
+            ctx.fillStyle='rgba(109,109,110,0.8)';ctx.fillRect(W-226,y-22,106,28);
+            ctx.fillStyle='#fff';ctx.font='18px Arial';ctx.fillText('מועדפים',W-173,y-2);y+=34;
+            ctx.fillStyle='#46d369';ctx.font='bold 20px Arial';ctx.fillText('התאמה של 100%',W-20,y);
+            ctx.fillStyle='#fff';ctx.font='20px Arial';ctx.fillText(document.getElementById('try-input-year').value||'2024',W-224,y);y+=30;
+            ctx.fillStyle='#fff';ctx.font='bold 20px Arial';ctx.fillText('מספר 1 בסרטים היום',W-20,y);y+=28;
+            ctx.fillStyle='#888';ctx.font='18px Arial';ctx.fillText('ליהוק: ',W-20,y);
+            ctx.fillStyle='#ddd';ctx.fillText(document.getElementById('try-input-cast').value||'',W-90,y);y+=24;
+            ctx.fillStyle='#888';ctx.fillText("ז'אנר: ",W-20,y);
+            ctx.fillStyle='#ddd';ctx.fillText(document.getElementById('try-input-genre').value||'',W-88,y);y+=30;
+            ctx.fillStyle='#bbb';ctx.font='17px Arial';
+            (function wrap(text,x,yy,mw,lh,max){const ws=text.split(' ');let l='',ls=[];for(const w of ws){const t=l?l+' '+w:w;if(ctx.measureText(t).width>mw&&l){ls.push(l);l=w;}else l=t;}if(l)ls.push(l);ls.slice(0,max).forEach((ln,i)=>ctx.fillText(ln,x,yy+i*lh));})(document.getElementById('try-input-desc').value||'',W-20,y,W-40,24,6);
+            ctx.save();ctx.translate(W/2,H/2);ctx.rotate(-Math.PI/4);ctx.font='bold 70px Arial';ctx.fillStyle='rgba(255,255,255,0.15)';ctx.textAlign='center';
+            [-100,0,100].forEach(dy=>ctx.fillText('PREVIEW ONLY',0,dy));ctx.restore();
+            ctx.fillStyle='#E50914';[0,10,20].forEach(dx=>ctx.fillRect(20+dx,H-36,5,22));
+            ctx.font='bold 22px Arial';ctx.textAlign='left';ctx.direction='ltr';ctx.fillText('NETLOVE',50,H-18);
+            const a=document.createElement('a');a.download='netlove-preview.png';a.href=canvas.toDataURL('image/png');a.click();
+        }
+        </script>
     </section>
 
     <div style="text-align: center; padding: 60px 20px;">
@@ -248,6 +489,14 @@
         setInterval(updateTimer, 1000);
         updateTimer();
     </script>
+
+    <!-- מודל תצוגה מקדימה -->
+    <div class="preview-modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+        <div class="preview-modal">
+            <button class="preview-modal-close" onclick="document.querySelector('.preview-modal-overlay').classList.remove('open')">✕</button>
+            <iframe src="frame-preview.html" title="תצוגה מקדימה של המסגרת"></iframe>
+        </div>
+    </div>
 </body>
 </html>
     
