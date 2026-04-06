@@ -222,7 +222,7 @@
                     <span>📷</span><p>העלו תמונה לתצוגה מקדימה</p>
                 </div>
                 <img id="preview-img" alt="">
-                <div class="poster-title" id="title-display">מטומטמים מאהבה</div>
+                <div class="poster-title" id="title-display"></div>
             </div>
             <div class="poster-info">
                 <div class="ctrl-row">
@@ -231,7 +231,7 @@
                 </div>
                 <div class="badges">
                     <span class="b-match">התאמה של 100%</span>
-                    <span class="b-year" id="year-display">2024</span>
+                    <span class="b-year" id="year-display"></span>
                     <span class="b-box">HD</span>
                     <span class="b-box">18+</span>
                     <span class="b-top"><span class="t">TOP</span><span class="n">10</span></span>
@@ -265,15 +265,9 @@
             <p>לחצו כאן או גררו תמונה</p>
         </div>
 
-        <!-- zoom + hint — shown after upload -->
-        <div id="img-controls" style="display:none; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; padding:12px 14px;">
-            <div style="font-size:0.72rem; color:#888; margin-bottom:8px;">🖐️ גררו את התמונה להזזה • זומו עם הסליידר</div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-size:0.75rem; color:#666;">🔍−</span>
-                <input type="range" id="zoom-slider" min="50" max="200" value="100"
-                    style="flex:1; accent-color:#E50914; cursor:pointer;">
-                <span style="font-size:0.75rem; color:#666;">+</span>
-            </div>
+        <!-- hint — shown after upload -->
+        <div id="img-controls" style="display:none; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; padding:10px 14px;">
+            <div style="font-size:0.72rem; color:#888;">🖐️ גררו את התמונה להזזה בתוך המסגרת</div>
         </div>
 
         <div class="card">
@@ -319,7 +313,6 @@
     const previewImg = document.getElementById('preview-img');
     const placeholder = document.getElementById('placeholder');
     const imgControls = document.getElementById('img-controls');
-    const zoomSlider  = document.getElementById('zoom-slider');
     const photoWrap   = document.getElementById('photo-wrap');
 
     uploadArea.addEventListener('click', () => photoInput.click());
@@ -357,7 +350,6 @@
                 previewImg.style.marginLeft = (-img.naturalWidth  / 2) + 'px';
                 previewImg.style.marginTop  = (-img.naturalHeight / 2) + 'px';
                 applyTransform();
-                zoomSlider.value = Math.round(imgScale * 100);
             };
             img.src = ev.target.result;
             previewImg.src = ev.target.result;
@@ -368,12 +360,6 @@
         };
         r.readAsDataURL(file);
     }
-
-    /* ── Zoom slider ── */
-    zoomSlider.addEventListener('input', () => {
-        imgScale = zoomSlider.value / 100;
-        applyTransform();
-    });
 
     /* ── Drag to pan (mouse) ── */
     let isDragging = false, startX, startY, startImgX, startImgY;
@@ -424,7 +410,6 @@
                 e.touches[1].clientY - e.touches[0].clientY
             );
             imgScale = Math.min(3, Math.max(0.3, pinchStartScale * (dist / pinchStartDist)));
-            zoomSlider.value = Math.round(imgScale * 100);
             applyTransform();
         }
         e.preventDefault();
