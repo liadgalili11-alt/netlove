@@ -70,7 +70,13 @@
             background: #111; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
         }
-        .poster-photo img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .poster-photo img {
+            position: absolute; display: none;
+            transform-origin: center center;
+            cursor: grab; user-select: none; -webkit-user-drag: none;
+            max-width: none;
+        }
+        .poster-photo img.dragging { cursor: grabbing; }
         .poster-photo::after {
             content: ''; position: absolute; bottom: 0; left: 0; right: 0;
             height: 110px; background: linear-gradient(to bottom, transparent, #000);
@@ -160,7 +166,7 @@
             padding: 8px 10px; border-radius: 6px;
             font-family: 'Assistant', sans-serif; font-size: 0.86rem;
         }
-        .ig textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+        .ig textarea { resize: none; min-height: 64px; line-height: 1.5; overflow: hidden; }
         .ig input:focus, .ig textarea:focus { outline: none; border-color: var(--red); }
         .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 
@@ -260,6 +266,17 @@
             <p>לחצו כאן או גררו תמונה</p>
         </div>
 
+        <!-- zoom + hint — shown after upload -->
+        <div id="img-controls" style="display:none; background:#1a1a1a; border:1px solid #2a2a2a; border-radius:10px; padding:12px 14px;">
+            <div style="font-size:0.72rem; color:#888; margin-bottom:8px;">🖐️ גררו את התמונה להזזה • זומו עם הסליידר</div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:0.75rem; color:#666;">🔍−</span>
+                <input type="range" id="zoom-slider" min="50" max="200" value="100"
+                    style="flex:1; accent-color:#E50914; cursor:pointer;">
+                <span style="font-size:0.75rem; color:#666;">+</span>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-title">התאימו אישית</div>
             <div class="ig">
@@ -297,10 +314,15 @@
 <canvas id="dl-canvas" style="display:none"></canvas>
 
 <script>
+    /* ── Upload ── */
     const uploadArea = document.getElementById('upload-area');
     const photoInput = document.getElementById('photo-input');
     const previewImg = document.getElementById('preview-img');
     const placeholder = document.getElementById('placeholder');
+    const imgControls = document.getElementById('img-controls');
+    const zoomSlider  = document.getElementById('zoom-slider');
+    const photoWrap   = document.getElementById('photo-wrap');
+
     uploadArea.addEventListener('click', () => photoInput.click());
     uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
@@ -311,18 +333,105 @@
     });
     photoInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); });
 
+    /* image state */
+    let imgScale = 1, imgX = 0, imgY = 0;
+
+    function applyTransform() {
+        previewImg.style.transform = `translate(${imgX}px, ${imgY}px) scale(${imgScale})`;
+    }
+
     function loadFile(file) {
         const r = new FileReader();
-        r.onload = e => {
-            previewImg.src = e.target.result;
+        r.onload = ev => {
+            const img = new Image();
+            img.onload = () => {
+                const wrapW = photoWrap.offsetWidth;
+                const wrapH = photoWrap.offsetHeight;
+                const scaleW = wrapW / img.naturalWidth;
+                const scaleH = wrapH / img.naturalHeight;
+                imgScale = Math.max(scaleW, scaleH);
+                imgX = 0; imgY = 0;
+                previewImg.style.width  = img.naturalWidth  + 'px';
+                previewImg.style.height = img.naturalHeight + 'px';
+                previewImg.style.left = '50%';
+                previewImg.style.top  = '50%';
+                previewImg.style.marginLeft = (-img.naturalWidth  / 2) + 'px';
+                previewImg.style.marginTop  = (-img.naturalHeight / 2) + 'px';
+                applyTransform();
+                zoomSlider.value = Math.round(imgScale * 100);
+            };
+            img.src = ev.target.result;
+            previewImg.src = ev.target.result;
             previewImg.style.display = 'block';
             placeholder.style.display = 'none';
             uploadArea.querySelector('h3').textContent = '✅ תמונה הועלתה!';
+            imgControls.style.display = 'block';
         };
         r.readAsDataURL(file);
     }
 
-    // Live updates
+    /* ── Zoom slider ── */
+    zoomSlider.addEventListener('input', () => {
+        imgScale = zoomSlider.value / 100;
+        applyTransform();
+    });
+
+    /* ── Drag to pan (mouse) ── */
+    let isDragging = false, startX, startY, startImgX, startImgY;
+
+    previewImg.addEventListener('mousedown', e => {
+        isDragging = true; startX = e.clientX; startY = e.clientY;
+        startImgX = imgX; startImgY = imgY;
+        previewImg.classList.add('dragging');
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        imgX = startImgX + (e.clientX - startX);
+        imgY = startImgY + (e.clientY - startY);
+        applyTransform();
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        previewImg.classList.remove('dragging');
+    });
+
+    /* ── Drag to pan (touch) ── */
+    let touchStartX, touchStartY, touchImgX, touchImgY;
+    let pinchStartDist = 0, pinchStartScale = 1;
+
+    previewImg.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY;
+            touchImgX = imgX; touchImgY = imgY;
+        } else if (e.touches.length === 2) {
+            pinchStartDist = Math.hypot(
+                e.touches[1].clientX - e.touches[0].clientX,
+                e.touches[1].clientY - e.touches[0].clientY
+            );
+            pinchStartScale = imgScale;
+        }
+        e.preventDefault();
+    }, { passive: false });
+
+    previewImg.addEventListener('touchmove', e => {
+        if (e.touches.length === 1) {
+            imgX = touchImgX + (e.touches[0].clientX - touchStartX);
+            imgY = touchImgY + (e.touches[0].clientY - touchStartY);
+            applyTransform();
+        } else if (e.touches.length === 2) {
+            const dist = Math.hypot(
+                e.touches[1].clientX - e.touches[0].clientX,
+                e.touches[1].clientY - e.touches[0].clientY
+            );
+            imgScale = Math.min(3, Math.max(0.3, pinchStartScale * (dist / pinchStartDist)));
+            zoomSlider.value = Math.round(imgScale * 100);
+            applyTransform();
+        }
+        e.preventDefault();
+    }, { passive: false });
+
+    /* ── Live text updates ── */
     [['input-title','title-display','מטומטמים מאהבה'],
      ['input-year', 'year-display', '2024'],
      ['input-cast', 'cast-display', 'שמות השחקנים'],
@@ -334,16 +443,12 @@
         });
     });
 
-    function drawWrapped(ctx, text, x, y, maxW, lh, max) {
-        const words = text.split(' '); let line = ''; const lines = [];
-        for (const w of words) {
-            const t = line ? line + ' ' + w : w;
-            if (ctx.measureText(t).width > maxW && line) { lines.push(line); line = w; }
-            else line = t;
-        }
-        if (line) lines.push(line);
-        lines.slice(0, max).forEach((l, i) => ctx.fillText(l, x, y + i * lh));
-    }
+    /* ── Auto-grow textarea ── */
+    const textarea = document.getElementById('input-desc');
+    textarea.addEventListener('input', () => {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    });
 </script>
 
 </body>
