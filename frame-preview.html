@@ -204,6 +204,7 @@
 <div class="page-header">
     <h1>NETLOVE</h1>
     <p>גלו איך התמונה שלכם נראית במסגרת שלנו 🎬</p>
+    <p style="color:#E50914; font-size:0.82rem; margin-top:6px;">⚠️ זוהי סקיצה בלבד — לאחר ההזמנה תקבלו עיצוב מקצועי אישי</p>
 </div>
 
 <div class="layout">
@@ -237,13 +238,11 @@
                 </div>
                 <div class="top1">מספר 1 בסרטים היום</div>
                 <div class="cast">
-                    <span class="lbl">ליהוק: </span><span id="cast-display">שמות השחקנים</span>
+                    <span class="lbl">ליהוק: </span><span id="cast-display"></span>
                     <span style="color:#444"> | </span>
-                    <span class="lbl">ז'אנר: </span><span id="genre-display">קומדיה רומנטית</span>
+                    <span class="lbl">ז'אנר: </span><span id="genre-display"></span>
                 </div>
-                <div class="desc" id="desc-display">
-                    כאן יופיע תיאור הסרט האישי שלכם. ספרו את הסיפור שלכם, איך הכרתם, מה מיוחד בקשר שלכם...
-                </div>
+                <div class="desc" id="desc-display"></div>
                 <div class="nl-logo">
                     <div class="nl-filmbox">
                         <div class="nl-perfs"><div class="nl-perf"></div><div class="nl-perf"></div><div class="nl-perf"></div><div class="nl-perf"></div></div>
@@ -295,11 +294,11 @@
             </div>
             <div class="ig">
                 <label>ליהוק (שמות)</label>
-                <input id="input-cast" type="text" placeholder="שמות השחקנים" value="שמות השחקנים">
+                <input id="input-cast" type="text" placeholder="לדוגמה: דנה ואורי" value="">
             </div>
             <div class="ig">
                 <label>תיאור הסרט</label>
-                <textarea id="input-desc" placeholder="ספרו את הסיפור שלכם...">כאן יופיע תיאור הסרט האישי שלכם. ספרו את הסיפור שלכם, איך הכרתם, מה מיוחד בקשר שלכם...</textarea>
+                <textarea id="input-desc" placeholder="ספרו את הסיפור שלכם — איך הכרתם, מה מיוחד בקשר שלכם..."></textarea>
             </div>
         </div>
 
